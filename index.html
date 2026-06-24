@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Captura de Siniestros - MARA 2026</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #3b82f6;
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #cbd5e1;
+            --success: #10b981;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: var(--background); color: var(--text); padding: 20px; line-height: 1.5; }
+        .container { max-width: 1000px; margin: 0 auto; background: var(--surface); padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.06); }
+        .header { text-align: center; margin-bottom: 20px; border-bottom: 3px solid var(--primary); padding-bottom: 15px; }
+        .header h1 { color: var(--primary); font-size: 24px; }
+        .grid { display: block; margin-bottom: 20px; }
+        .form-group { display: block; margin-bottom: 15px; width: 100%; }
+        label { font-size: 13px; font-weight: 600; margin-bottom: 5px; display: block; color: var(--text); }
+        input, select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; background-color: #fafafa; height: 42px; }
+        input:focus, select:focus { outline: none; border-color: var(--primary-light); background-color: #fff; }
+        .btn-group { margin-top: 10px; display: block; text-align: right; }
+        button { padding: 12px 24px; font-size: 14px; font-weight: 600; border: none; border-radius: 6px; cursor: pointer; color: white; display: inline-block; margin-left: 10px; }
+        .btn-primary { background-color: var(--primary); }
+        .status-message { text-align: center; margin-top: 15px; font-weight: bold; padding: 10px; border-radius: 6px; display: none; }
+        .status-success { background-color: #d1fae5; color: #065f46; }
+        .status-loading { background-color: #e0f2fe; color: #0369a1; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Captura Digital de Siniestros (Nube MARA)</h1>
+    </div>
+
+    <form id="siniestroForm" onsubmit="enviarALaNube(event)">
+        <div class="grid">
+            <div class="form-group"><label>Fecha *</label><input type="date" id="fecha" required></div>
+            <div class="form-group"><label>Siniestro *</label><input type="text" id="siniestro" inputmode="numeric" pattern="[0-9]{9}" maxlength="9" required></div>
+            <div class="form-group"><label>N/L</label><select id="n_l"><option value=""></option><option value="1">1</option><option value="2">2</option></select></div>
+            <div class="form-group"><label>Póliza</label><input type="text" id="poliza" inputmode="numeric" pattern="[0-9]*" maxlength="10"></div>
+            <div class="form-group"><label>Cobertura</label><select id="cobertura"><option value=""></option><option value="AMPLIA">AMPLIA</option><option value="LIMITADA">LIMITADA</option><option value="RC">RC</option></select></div>
+            <div class="form-group"><label>Daños NA</label><input type="number" id="daños_na" inputmode="decimal" step="0.01"></div>
+            <div class="form-group"><label>Daños 3RO</label><input type="number" id="daños_3ro" inputmode="decimal" step="0.01"></div>
+            <div class="form-group"><label>Declaración</label><input type="text" id="declaracion" style="text-transform: uppercase;"></div>
+            <div class="form-group"><label>Segmentación</label><input type="text" id="segmentacion" style="text-transform: uppercase;"></div>
+            <div class="form-group"><label>Grúa</label><input type="number" id="grua" inputmode="numeric" pattern="[0-9]*"></div>
+            <div class="form-group"><label>Responsabilidad</label><select id="responsabilidad"><option value=""></option><option value="ASEGURADO">ASEGURADO</option><option value="TERCERO">TERCERO</option><option value="COMPARTIDA">COMPARTIDA</option><option value="INDEFINIDA">INDEFINIDA</option></select></div>
+            <div class="form-group"><label>Cia</label><select id="cia"><option value=""></option><option value="N">N</option><option value="S">S</option></select></div>
+            <div class="form-group"><label>Compañía</label><input type="text" id="compañia" style="text-transform: uppercase;"></div>
+            <div class="form-group"><label>Sipac R</label><select id="sipac_r"><option value=""></option><option value="1">1</option></select></div>
+            <div class="form-group"><label>Sipac E</label><input type="number" id="sipac_e" inputmode="numeric" pattern="[0-9]*"></div>
+            <div class="form-group"><label>Trad R</label><select id="trad_r"><option value=""></option><option value="1">1</option></select></div>
+            <div class="form-group"><label>Trad E</label><input type="number" id="trad_e" inputmode="numeric" pattern="[0-9]*"></div>
+            <div class="form-group"><label>Rec</label><select id="rec"><option value=""></option><option value="1">1</option></select></div>
+            <div class="form-group"><label>Efectivo</label><input type="number" id="efectivo" inputmode="decimal" step="0.01"></div>
+            <div class="form-group"><label>Tarjeta</label><input type="number" id="tarjeta" inputmode="decimal" step="0.01"></div>
+            <div class="form-group"><label>Rechazo</label><select id="rechazo"><option value=""></option><option value="1">1</option></select></div>
+            <div class="form-group"><label>Verificaciones</label><select id="verificaciones"><option value=""></option><option value="1">1</option></select></div>
+            <div class="form-group"><label>PP</label><input type="number" id="pp" inputmode="decimal" step="0.01"></div>
+            <div class="form-group"><label>Médico</label><select id="medico"><option value=""></option><option value="1">1</option></select></div>
+            <div class="form-group"><label>Clínica</label><select id="clinica"><option value=""></option><option value="1">1</option></select></div>
+            <div class="form-group"><label>Observaciones</label><input type="text" id="observaciones" style="text-transform: uppercase;"></div>
+            <div class="form-group"><label>Tipo</label><select id="tipo"><option value=""></option><option value="1">1</option><option value="2">2</option></select></div>
+            <div class="form-group"><label>Asigna</label><input type="time" id="asig" step="1"></div>
+            <div class="form-group"><label>Confirma</label><input type="time" id="conf" step="1"></div>
+            <div class="form-group"><label>Llega</label><input type="time" id="llega" step="1"></div>
+            <div class="form-group"><label>Término</label><input type="time" id="term" step="1"></div>
+        </div>
+
+        <div class="btn-group">
+            <button type="submit" class="btn-primary">➕ Guardar en la Nube</button>
+        </div>
+    </form>
+    
+    <div id="status" class="status-message"></div>
+</div>
+
+<script>
+    // CAMBIA EL TEXTO DE ABAJO POR TU ENLACE LARGO DE GOOGLE ENTRE LAS COMILLAS
+    const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbxPdHST1Prgffj0yryuoCWZTu6WHCSO24wUHnu-1dQfnkagKMHGfPeMEAFLiBBnF4tGSA/exec";
+
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+    });
+
+    function mostrarStatus(texto, clase, duracion = 0) {
+        const el = document.getElementById('status');
+        el.innerText = texto;
+        el.className = "status-message " + clase;
+        el.style.display = "block";
+        if (duracion > 0) {
+            setTimeout(() => { el.style.display = "none"; }, duracion);
+        }
+    }
+
+    function enviarALaNube(event) {
+        event.preventDefault();
+        
+        if(URL_GOOGLE_SCRIPT === "AQUÍ_PEGAS_TU_URL_DE_GOOGLE") {
+            alert("Error: No has puesto tu enlace real de Google en el código HTML.");
+            return;
+        }
+
+        mostrarStatus("⏳ Guardando registro en la nube...", "status-loading");
+
+        const datos = {
+            "Fecha": document.getElementById('fecha').value,
+            "Siniestro": document.getElementById('siniestro').value,
+            "N/L": document.getElementById('n_l').value,
+            "Poliza": document.getElementById('poliza').value,
+            "Cobertura": document.getElementById('cobertura').value,
+            "Daños NA": document.getElementById('daños_na').value || "0",
+            "Daños 3RO": document.getElementById('daños_3ro').value || "0",
+            "Declaracion": document.getElementById('declaracion').value.toUpperCase(),
+            "Segmentación": document.getElementById('segmentacion').value.toUpperCase(),
+            "Grua": document.getElementById('grua').value || "0",
+            "Responsabilidad": document.getElementById('responsabilidad').value,
+            "Cia": document.getElementById('cia').value,
+            "Compañía": document.getElementById('compañia').value.toUpperCase(),
+            "Sipac R": document.getElementById('sipac_r').value,
+            "Sipac E": document.getElementById('sipac_e').value || "0",
+            "Trad R": document.getElementById('trad_r').value,
+            "Trad E": document.getElementById('trad_e').value || "0",
+            "Rec": document.getElementById('rec').value,
+            "Efectivo": document.getElementById('efectivo').value || "0",
+            "Tarjeta": document.getElementById('tarjeta').value || "0",
+            "Rechazo": document.getElementById('rechazo').value,
+            "Verificaciones": document.getElementById('verificaciones').value,
+            "PP": document.getElementById('pp').value || "0",
+            "Médico": document.getElementById('medico').value,
+            "Clínica": document.getElementById('clinica').value,
+            "Observaciones": document.getElementById('observaciones').value.toUpperCase(),
+            "Tipo": document.getElementById('tipo').value,
+            "Asigna": document.getElementById('asig').value,
+            "Confirma": document.getElementById('conf').value,
+            "Llega": document.getElementById('llega').value,
+            "Término": document.getElementById('term').value
+        };
+
+        fetch(URL_GOOGLE_SCRIPT, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(datos)
+        })
+        .then(() => {
+            mostrarStatus("✅ ¡Registro guardado exitosamente en Google Sheets!", "status-success", 4000);
+            document.getElementById('siniestroForm').reset();
+            document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+            document.getElementById('siniestro').focus();
+        })
+        .catch(err => {
+            mostrarStatus("❌ Error de red: " + err, "status-message");
+            console.error(err);
+        });
+    }
+</script>
+</body>
+</html>
