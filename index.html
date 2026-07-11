@@ -12,10 +12,31 @@
         .btn-submit { background-color: #2ecc71; color: white; border: none; font-weight: bold; padding: 12px; }
         .btn-submit:hover { background-color: #27ae60; color: white; }
         .uppercase-input { text-transform: uppercase; }
-        /* Estilo para alinear y dar aire a los checkboxes */
-        .checkbox-card { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 10px 15px; display: flex; align-items: center; height: 100%; }
-        .form-check-input { width: 1.3em; height: 1.3em; cursor: pointer; }
-        .form-check-label { cursor: pointer; padding-left: 5px; font-weight: 500; }
+        
+        /* Ocultar las flechas arriba/abajo en campos numéricos (Chrome, Safari, Edge) */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        /* Ocultar las flechas en Firefox */
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        /* Estilo para alinear perfectamente los Checkboxes en la cuadrícula */
+        .checkbox-card { 
+            background: #f8f9fa; 
+            border: 1px solid #e9ecef; 
+            border-radius: 8px; 
+            padding: 10px 15px; 
+            display: flex; 
+            align-items: center; 
+            height: 38px; 
+            margin-top: 32px; /* Empuja el checkbox para alinearse con los inputs normales */
+        }
+        .form-check-input { width: 1.2em; height: 1.2em; cursor: pointer; }
+        .form-check-label { cursor: pointer; padding-left: 5px; font-weight: 500; color: #212529; }
     </style>
 </head>
 <body>
@@ -27,7 +48,7 @@
             <p class="text-muted small">Base de Datos Operativa - MARA</p>
         </div>
 
-        <form id="formularioSiniestros" action="https://script.google.com/macros/s/AKfycbwmFJV5-B1VMyiF43w5nyYHGfazvLcjHIa6aM2g7HFMZqJAj2mcIS8TrZDJHpQGUvFZwg/exec">
+        <form id="formularioSiniestros" action="https://script.google.com/macros/library/d/13iLqLIbF_dPCYPdxGqnntW_xD9mvflRyZpr0-Pnw9CLB0--bczR_cp5Q/7">
             
             <div class="row g-3">
                 <div class="col-md-4">
@@ -245,6 +266,7 @@
 </div>
 
 <script>
+    // Configura la fecha de hoy automáticamente
     document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
     });
@@ -253,6 +275,7 @@
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         
+        // Forzar mayúsculas reales en los datos de texto antes de enviarlos
         document.querySelectorAll('.uppercase-input').forEach(input => {
             input.value = input.value.toUpperCase().trim();
         });
